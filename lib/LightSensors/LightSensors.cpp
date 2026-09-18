@@ -4,6 +4,7 @@ namespace LightSensors {
 
 Manager::Manager(const Config& cfg) : cfg_(cfg) {}
 
+// retorna x dentro de um inervalo A e B, mesma coisa que o std::clamp
 int Manager::clampi(int x, int a, int b) {
 	return (x < a) ? a : (x > b) ? b : x;
 }
@@ -31,6 +32,7 @@ void Manager::sensorUpdate(SensorState& s) {
 	s.filtered = cfg_.alpha * s.lastRaw + (1.0f - cfg_.alpha) * s.filtered;
 	s.lastFilt = (int)(s.filtered + 0.5f);
 
+	// demominador
 	int denom = max(1, s.calBright - s.calDark);
 	int pct = ((s.lastFilt - s.calDark) * 100) / denom;
 	s.lastPct = clampi(pct, 0, 100);
@@ -38,7 +40,6 @@ void Manager::sensorUpdate(SensorState& s) {
 
 void Manager::updateVirtualButton(SensorState& s) {
 	if (!s.hasButton) return;
-
 	if (!s.btnState && s.lastPct >= cfg_.btnOnPct) s.btnState = true;
 	else if (s.btnState && s.lastPct <= cfg_.btnOffPct) s.btnState = false;
 }

@@ -279,7 +279,7 @@ static bool send_one_file(const char* full_path) {
 	fname = fname ? fname + 1 : full_path;
 	bool ok = transfer_file_with_token(
 		f,
-		fname,        // 👈 agora no escopo certo
+		fname,        // agora no escopo certo
 		img_id,
 		token,
 		file_size,
@@ -429,11 +429,23 @@ void loop() {
 	
 	// 2) Dispara ThumbMaker quando "botão de luz" do PIN 32 ligar (borda 0->1)
 	if (g_maker) {
+		Serial.println("g_maker inicializado.");
 		const int idx32 = findSensorIndexByPin(g_sensors, 32);
 		if (idx32 >= 0) {
 			const bool light32 = g_sensors->button((uint8_t)idx32);
+			
+			Serial.print("sensor: "); Serial.print(idx32);
+			Serial.print(" de ");Serial.println(g_sensors->count());
+			if (light32) Serial.println("light: true");
+			else Serial.println("light: false");
+
+			if (g_lastLight32) Serial.print("last_light: true");
+			else Serial.println("last_light: false");
+
 			// borda de subida: OFF -> ON
-			if (!g_lastLight32 && light32) {
+			//if (!g_lastLight32 && light32) {
+			// nao esta caindo aqui, ver isso dps
+			if (true) {
 				Serial.println("[ThumbMaker] Trigger pelo sensor (PIN 32). Processando waitlist...");
 				g_maker->processWaitlist();
 				Serial.println("[ThumbMaker] Fim do processamento.");
@@ -442,6 +454,8 @@ void loop() {
 			}
 			g_lastLight32 = light32;
 		}
+	} else {
+		Serial.println("g_maker não inicializado.");
 	}
 
 	// 3) log 1Hz quando pronto

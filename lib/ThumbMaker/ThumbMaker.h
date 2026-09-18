@@ -11,8 +11,9 @@ struct Config {
 	uint32_t spiFreq = 16000000;
 
 	// Pastas
-	const char* srcDir = "/WAITLIST";
+	const char* srcDir = "/DCIM";
 	const char* outDir = "/THUMB";
+	const char* sentDir = "/DCIM_sent"; // depois que converteu a imagem, move ela pra ca
 
 	// Thumbnail target
 	uint16_t targetWidth = 180;
@@ -82,7 +83,7 @@ private:
 
 	bool ensureRowCacheAllocated(uint16_t newDecW);
 	void resetRow(uint16_t y);
-	void freeCaches();
+	int freeCaches();
 };
 
 } // namespace ThumbMaker

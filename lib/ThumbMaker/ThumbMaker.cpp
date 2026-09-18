@@ -93,8 +93,8 @@ void Maker::resetRow(uint16_t y) {
 	if (r->filled && filledBytes_ > 0) memset(r->filled, 0, filledBytes_);
 }
 
-void Maker::freeCaches() {
-	if (!rows_) return;
+int Maker::freeCaches() {
+	if (!rows_) return 1;
 	for (uint16_t i = 0; i < cfg_.cacheRows; i++) {
 		free(rows_[i].data);
 		free(rows_[i].filled);
@@ -103,6 +103,7 @@ void Maker::freeCaches() {
 	}
 	free(rows_);
 	rows_ = nullptr;
+	return 0;
 }
 
 uint8_t Maker::getAverage2x2_4bit(RowCache* r0, RowCache* r1, uint16_t x) {
@@ -270,13 +271,15 @@ void Maker::processWaitlist() {
 		if (!entry.isDirectory() && endsWithJpg(entry.name())) {
 			String fileName = String(entry.name());
 			String fullPath = String(cfg_.srcDir) + "/" + fileName;
+			String fullPathSent = String(cfg_.sentDir) + "/" + fileName;
 
 			entry.close();
 
 			if (makeThumbnail(fullPath, fileName)) {
-				SD.remove(fullPath);
+				SD.rename(fullPath, fullPathSent);
+				//SD.remove(fullPath);
 				if (cfg_.verbose) {
-					Serial.printf("Removido da WAITLIST: %s\n", fileName.c_str());
+					Serial.printf("Removido da WAITLIST e arquivado em DCIM_sent: %s\n", fileName.c_str());
 				}
 			} else {
 				Serial.printf("Falha ao processar: %s\n", fullPath.c_str());

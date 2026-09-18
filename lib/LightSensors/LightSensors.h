@@ -34,8 +34,8 @@ struct SensorState {
 	uint8_t pin = 255;
 
 	// leituras
-	int lastRaw  = 0;
-	float filtered = 0.0f;
+	int lastRaw  = 0; // leitura direta do pino
+	float filtered = 0.0f; // filtra le os calDark e calBright e alpha
 	int lastFilt = 0;
 	int lastPct  = 0;
 
